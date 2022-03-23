@@ -1,0 +1,147 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Sailing Advisor</title>
+
+  <meta property="og:title" content="Sailing Advisor">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="A simple HTML5 Template for new projects.">
+  <meta property="og:image" content="image.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+  	<style>
+		
+		body {
+			font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+		}
+		h1, h2  {color: blue;}	
+
+	</style>
+
+</head>
+
+<body>
+
+<form id="myForm">
+<div class="rendered-form">
+    <div class="formbuilder-number form-group field-wind">
+        <label for="wind" class="formbuilder-number-label">Wind forecast (kts)<span class="formbuilder-required">*</span></label>
+        <input type="number" class="form-control" name="wind" access="false" min="1" max="25" step="1" id="wind" required="required" aria-required="true">
+    </div>
+    <div class="formbuilder-number form-group field-gust">
+        <label for="gust" class="formbuilder-number-label">Gust forecast (kts)<span class="formbuilder-required">*</span></label>
+        <input type="number" class="form-control" name="gust" access="false" min="5" max="67" step="1" id="gust" required="required" aria-required="true">
+    </div>
+    <div class="formbuilder-select form-group field-dir">
+        <label for="dir" class="formbuilder-select-label">Direction<span class="formbuilder-required">*</span></label>
+        <select class="form-control" name="dir" id="dir" required="required" aria-required="true">
+            <option value="n" selected="true" id="dir-0">N</option>
+            <option value="neese" id="dir-1">NE,E,SE</option>
+            <option value="s" id="dir-2">S</option>
+            <option value="swwnw" id="dir-3">SW,W,NW</option>
+        </select>
+    </div>
+    <div class="formbuilder-select form-group field-route">
+        <label for="route" class="formbuilder-select-label">Route<span class="formbuilder-required">*</span></label>
+        <select class="form-control" name="route" id="route" required="required" aria-required="true">
+            <option value="local" selected="true" id="route-0">Local Buoys</option>
+            <option value="downriver" id="route-1">Downriver</option>
+        </select>
+    </div>
+	<input type="submit"/>
+</div>
+</form>
+<input type="button" onclick="location.href='?';" value="Reset" />
+
+<h2>Special notices for briefing</h2>
+
+<h1 id="summary">SUMMARY</h1>
+
+	<div id = "report">
+		<div id = "dangerousWind" style="display:none; border-style:solid; margin:1em">
+			<h1>Hazardous wind</h1>
+			<p><ul>
+				<li>Carefully consider whether cancellation is appropriate.</li>
+				<li>Disallow inexperienced sailors from command of boats.</li>
+				<li>Enforce mast-head floats on 2-handers</li>
+				<li>Require smaller sails or reefing</li>
+				<li>Describe safe boat-handling, launching and landing</li>
+			</ul></p>
+		</div>
+		
+		<div id = "strongGusts" style="display:none; border-style:solid; margin:1em">
+			<h1>Strong gusts</h1>
+			<p><ul>
+				<li>Describe safe boat-handling on path and ramp</li>
+				<li>Enforce mast-head floats on 2-handers</li>
+				<li>Recommend smaller sails (Lasers, Oscar) or reefing</li>
+			</ul></p>
+		</div>
+		
+		<div id = "onshoreWind" style="display:none; border-style:solid; margin:1em">
+			<h1>Onshore wind</h1>
+			<p><ul>
+				<li>Describe how to launch and land in offshore wind</li>
+				<li>Explain the need to avoid the trees on the lee shore</li>
+			</ul></p>
+		</div>
+		
+
+
+	</div>
+
+  
+  <script>
+	
+	// Get params
+	const params = new Proxy(new URLSearchParams(window.location.search), {
+		get: (searchParams, prop) => searchParams.get(prop),
+	});
+	
+	let wind = params.wind; 
+	let gust = params.gust; 
+	let dir = params.dir; 
+	let route = params.route; 
+	
+	fill("wind", wind);	
+	fill("gust", gust);
+	fill("dir", dir);
+	fill("route", route);
+
+	document.getElementById("summary").value = "Hello"
+		
+	if (gust > 20 && gust < 30) { 
+		show("strongGusts");
+	}
+
+	if (gust > 29) { 
+		show("dangerousWind");
+	}
+	
+	if (dir=="neese") {
+		show("onshoreWind");
+	}
+
+	function show(myId) { 
+		document.getElementById(myId).style.display=""
+	}
+	
+	function fill(myId, myVal) { 
+		console.log("Setting " + myId + " to " + myVal)
+		document.getElementById(myId).value = myVal 
+	}
+	
+	
+  </script>
+  <!-- <script src="js/scripts.js"></script> -->
+</body>
+</html>
