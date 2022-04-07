@@ -62,11 +62,12 @@
 </form>
 <input type="button" onclick="location.href='?';" value="Reset" />
 
-<h2>Special notices for briefing</h2>
-
-<h1 id="summary">SUMMARY</h1>
-
 	<div id = "report">
+
+		<div id = "noConcerns" style="display:none; border-style:solid; margin:1em">
+			<h1>No special notices</h1>
+		</div>
+
 		<div id = "dangerousWind" style="display:none; border-style:solid; margin:1em">
 			<h1>Hazardous wind</h1>
 			<p><ul>
@@ -86,16 +87,30 @@
 				<li>Recommend smaller sails (Lasers, Oscar) or reefing</li>
 			</ul></p>
 		</div>
-		
-		<div id = "onshoreWind" style="display:none; border-style:solid; margin:1em">
-			<h1>Onshore wind</h1>
+
+		<div id = "onshoreWindLocal" style="display:none; border-style:solid; margin:1em">
+			<h1>Onshore wind (Local)</h1>
 			<p><ul>
 				<li>Describe how to launch and land in offshore wind</li>
 				<li>Explain the need to avoid the trees on the lee shore</li>
 			</ul></p>
 		</div>
-		
 
+		<div id = "onshoreWindDownriver" style="display:none; border-style:solid; margin:1em">
+			<h1>Onshore wind (Downriver)</h1>
+			<p><ul>
+				<li>Describe how to launch and land in offshore wind</li>
+			</ul></p>
+		</div>
+
+		<div id = "lowGustRisk" style="display:none; border-style:solid; margin:1em">
+			<h1>Minor risk of strong gusts</h1>
+			<p><ul>
+				<li>This wind should be comfortable, but underforecasts do happen.</li>
+				<li>Stay alert for the low chance of unexpected difficulty.</li>
+				<li>Aggravating factors include a north wind over rising tide and/or passing showers.</li>
+			</ul></p>
+		</div>
 
 	</div>
 
@@ -117,18 +132,34 @@
 	fill("dir", dir);
 	fill("route", route);
 
-	document.getElementById("summary").value = "Hello"
-		
-	if (gust > 20 && gust < 30) { 
-		show("strongGusts");
-	}
+	let shown = false;
 
-	if (gust > 29) { 
+	// Classify gust hazard
+	if (gust > 16 && gust < 21) {
+		shown = true;
+		show("lowGustRisk");
+	} else if (gust > 20 && gust < 30) { 
+		shown = true;
+		show("strongGusts");
+	} else if (gust > 29) { 
+		shown = true;
 		show("dangerousWind");
 	}
 	
+	// Classify onshore wind
 	if (dir=="neese") {
-		show("onshoreWind");
+		shown = true;
+		if (route == "local") {
+			show("onshoreWindLocal");
+		} else
+		{
+			show("onshoreWindDownriver");
+		}
+	}
+
+	// Wrap up
+	if (!shown) {
+		show("noConcerns");
 	}
 
 	function show(myId) { 
