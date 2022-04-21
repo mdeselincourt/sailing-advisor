@@ -31,7 +31,9 @@
 
 <body>
 
-<h1>bit.ly/i-am-the-ro</h1>
+<h1>bit.ly/henry-thinks</h1>
+
+<img src = "./henry.jpg"/>
 
 <form id="myForm">
 <div class="rendered-form">
@@ -59,6 +61,10 @@
             <option value="downriver" id="route-1">Downriver</option>
         </select>
     </div>
+	<div class="formbuilder-number form-group field-temp">
+        <label for="temp" class="formbuilder-number-label">Temp<span class="formbuilder-required">*</span></label>
+        <input type="number" class="form-control" name="temp" access="false" min="-10" max="40" step="1" id="temp" required="required" aria-required="true">
+    </div>
 	<input type="submit"/>
 </div>
 </form>
@@ -67,51 +73,39 @@
 	<div id = "report">
 
 		<div id = "noConcerns" style="display:none; border-style:solid; margin:1em">
-			<h1>No special notices</h1>
+			<p>I think it's <b>likely</b> this will be a normal sailing day.</p>>
 		</div>
 
 		<div id = "dangerousWind" style="display:none; border-style:solid; margin:1em">
-			<h1>Hazardous wind</h1>
-			<p><ul>
-				<li>Carefully consider whether cancellation is appropriate.</li>
-				<li>Disallow inexperienced sailors from command of boats.</li>
-				<li>Enforce mast-head floats on 2-handers</li>
-				<li>Require smaller sails or reefing</li>
-				<li>Describe safe boat-handling, launching and landing</li>
-			</ul></p>
+			<p>I think it's <b>likely</b> sailing will be cancelled or subject to strict safety rules.</p>
 		</div>
 		
 		<div id = "strongGusts" style="display:none; border-style:solid; margin:1em">
-			<h1>Strong gusts</h1>
-			<p><ul>
-				<li>Describe safe boat-handling on path and ramp (e.g. avoid pointing prow downwind when on trolley and when launching/landing)</li>
-				<li>Enforce mast-head floats on 2-handers</li>
-				<li>Recommend smaller sails (Lasers, Oscar) or reefing</li>
-			</ul></p>
-		</div>
-
-		<div id = "onshoreWindLocal" style="display:none; border-style:solid; margin:1em">
-			<h1>Onshore wind (Local)</h1>
-			<p><ul>
-				<li>Describe how to launch and land in offshore wind</li>
-				<li>Explain the need to avoid the trees on the lee shore</li>
-			</ul></p>
-		</div>
-
-		<div id = "onshoreWindDownriver" style="display:none; border-style:solid; margin:1em">
-			<h1>Onshore wind (Downriver)</h1>
-			<p><ul>
-				<li>Describe how to launch and land in offshore wind</li>
-			</ul></p>
+			<p>I think it is <b>likely</b> gusts will be problematic.</b></p>
 		</div>
 
 		<div id = "lowGustRisk" style="display:none; border-style:solid; margin:1em">
-			<h1>Minor risk of strong gusts</h1>
-			<p><ul>
-				<li>This wind should be comfortable, but underforecasts do happen.</li>
-				<li>Stay alert for the low chance of unexpected difficulty.</li>
-				<li>Aggravating factors include a north wind over rising tide and/or passing showers.</li>
-			</ul></p>
+			<p>I think it is <b>unlikely but possible</b> that gusts will be problematic.</b></p>
+		</div>
+
+		<div id = "lowWind" style="display:none; border-style:solid; margin:1em">
+			<p>I think it is <b/>possible</b> sailing will be very slow or cancelled.</p>
+		</div>
+
+		<div id = "tooLowGust" style="display:none; border-style:solid; margin:1em">
+			<p>I think it is <b/>likely</b> sailing will be very slow or even cancelled.</p>
+		</div>
+
+		<div id = "onshore" style="display:none; border-style:solid; margin:1em">
+			<p>I think an <b>onshore wind</b> must be taken into account.</p>
+		</div>
+
+		<div id = "cold" style="display:none; border-style:solid; margin:1em">
+			<p>I think this is cold and would consider a dry-suit, but this is quite subjective.</p>
+		</div>
+
+		<div id = "cool" style="display:none; border-style:solid; margin:1em">
+			<p>I think this is wetsuit temperature, but this is quite subjective.</p>
 		</div>
 
 	</div>
@@ -124,20 +118,27 @@
 		get: (searchParams, prop) => searchParams.get(prop),
 	});
 	
+	// Get params from URL
 	let wind = params.wind; 
 	let gust = params.gust; 
 	let dir = params.dir; 
 	let route = params.route; 
-	
+	let temp = params.temp;
+
+	// Populate the form with values from the URL 
 	fill("wind", wind);	
 	fill("gust", gust);
 	fill("dir", dir);
 	fill("route", route);
+	fill("temp", temp);
 
 	let shown = false;
 
 	// Classify gust hazard
-	if (gust > 16 && gust < 21) {
+	if (gust < 8) {
+		shown = true;
+		show("tooLowGust");
+	} else if (gust > 16 && gust < 21) {
 		shown = true;
 		show("lowGustRisk");
 	} else if (gust > 20 && gust < 30) { 
@@ -147,16 +148,26 @@
 		shown = true;
 		show("dangerousWind");
 	}
-	
-	// Classify onshore wind
-	if (dir=="neese") {
+
+	if (gust > 7 && wind < 5) {
 		shown = true;
-		if (route == "local") {
-			show("onshoreWindLocal");
-		} else
-		{
-			show("onshoreWindDownriver");
-		}
+		show("lowWind");
+	}
+
+	// Classify onshore wind
+	if (gust > 7 && wind > 4 && dir=="neese") {
+		shown = true;
+		show("onshore");
+	}
+
+	if (temp < 9) {
+		shown = true;
+		show("cold")
+	}
+
+	if (temp > 8 && temp < 16) {
+		shown = true;
+		show("cool")
 	}
 
 	// Wrap up
